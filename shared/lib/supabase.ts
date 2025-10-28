@@ -1,22 +1,32 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@shared/types/database';
 
+function getEnvVar(name: string) {
+  // Prefer Vite's import.meta.env for client builds
+  // @ts-ignore
+  const fromImportMeta = typeof import.meta !== 'undefined' ? (import.meta as any)["env"]?.[name] : undefined;
+  const fromProcess = typeof process !== 'undefined' ? (process as any).env?.[name] : undefined;
+  const fromWindow = typeof window !== 'undefined' ? (window as any)?.__env__?.[name] : undefined;
+  return fromImportMeta ?? fromWindow ?? fromProcess ?? undefined;
+}
+
 const SUPABASE_URL =
-  import.meta.env.VITE_SUPABASE_URL ||
-  // fallback to common env names if VITE_ vars weren't set by the environment
-  import.meta.env.NEXT_PUBLIC_SUPABASE_URL ||
-  import.meta.env.NEXT_SUPABASE_URL ||
+  getEnvVar('VITE_SUPABASE_URL') ||
+  getEnvVar('NEXT_PUBLIC_SUPABASE_URL') ||
+  getEnvVar('NEXT_SUPABASE_URL') ||
   '';
 const SUPABASE_ANON_KEY =
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-  import.meta.env.NEXT_SUPABASE_ANON_KEY ||
+  getEnvVar('VITE_SUPABASE_ANON_KEY') ||
+  getEnvVar('NEXT_PUBLIC_SUPABASE_ANON_KEY') ||
+  getEnvVar('NEXT_SUPABASE_ANON_KEY') ||
   '';
 
 // Basic runtime validation to give a clearer error if envs are missing
 if (!SUPABASE_URL || !/^https?:\/\//.test(SUPABASE_URL)) {
-  // Avoid throwing here to keep dev server up; throw when createClient is invoked instead
-  console.warn('[supabase] SUPABASE_URL is missing or invalid:', SUPABASE_URL);
+  console.warn('[supabase] SUPABASE_URL is missing or invalid. import.meta.env keys:', {
+    VITE_SUPABASE_URL: Boolean(getEnvVar('VITE_SUPABASE_URL')),
+    NEXT_PUBLIC_SUPABASE_URL: Boolean(getEnvVar('NEXT_PUBLIC_SUPABASE_URL')),
+  });
 }
 if (!SUPABASE_ANON_KEY) {
   console.warn('[supabase] SUPABASE_ANON_KEY is missing or empty');
