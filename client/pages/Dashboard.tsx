@@ -94,9 +94,21 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [filterType, setFilterType] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const { prices } = useRealtimePrices(3000); // Update every 3 seconds
+
+  // Build assets with real-time prices
+  const assets = useMemo(
+    () =>
+      baseAssets.map((asset) => ({
+        ...asset,
+        price: prices[asset.symbol]?.price || 0,
+        change24h: prices[asset.symbol]?.change24h || 0,
+      })),
+    [prices]
+  );
 
   const totalBalance = assets.reduce((sum, asset) => sum + asset.balance * asset.price, 0);
-  const btcEquivalent = totalBalance / 42500;
+  const btcEquivalent = totalBalance / prices.BTC.price;
   const change24h = 2150; // Mock 24h change
 
   const filteredTransactions = transactions.filter((tx) => {
