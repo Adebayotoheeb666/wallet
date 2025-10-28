@@ -107,8 +107,19 @@ export default function Index() {
           </motion.div>
 
           {/* Right Visual */}
-          <div className="flex items-center justify-center">
-            <div className="relative w-full max-w-md">
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="flex items-center justify-center"
+          >
+            <motion.div
+              initial={{ y: 0 }}
+              animate={{ y: -20 }}
+              transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+              className="relative w-full max-w-md"
+            >
               {/* Dashboard Preview Mock */}
               <div className="bg-gradient-to-br from-blue-50 to-white rounded-2xl shadow-2xl p-6 border border-blue-100">
                 {/* Mockup Card */}
@@ -150,8 +161,8 @@ export default function Index() {
               <div className="absolute -bottom-4 -left-4 bg-green-500 text-white rounded-full p-4 shadow-lg">
                 <Shield size={24} />
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
