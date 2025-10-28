@@ -35,58 +35,147 @@ const COLORS = ["#2563eb", "#0ea5e9", "#06b6d4", "#0891b2"];
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { authUser, signOut } = useAuth();
+  const { portfolioValue, portfolioChange, assets, transactions, loading, error, refetch } = useDashboardData();
   const [filterType, setFilterType] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
-  const { prices } = useRealtimePrices(3000); // Update every 3 seconds
+  const [portfolioHistory, setPortfolioHistory] = useState<any[]>([]);
+  const [primaryWallet, setPrimaryWallet] = useState<string>("");
 
-  // Build assets with real-time prices
-  const assets = useMemo(
-    () =>
-      baseAssets.map((asset) => ({
-        ...asset,
-        price: prices[asset.symbol]?.price || 0,
-        change24h: prices[asset.symbol]?.change24h || 0,
-      })),
-    [prices],
-  );
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authUser) {
+      navigate("/connect-wallet");
+    }
+  }, [authUser, navigate]);
+
+  // Fetch portfolio history for chart
+  useEffect(() => {
+    async function fetchHistory() {
+      if (!authUser) return;
+      try {
+        const { id } = authUser;
+        // Get user ID from auth
+        const snapshots = await getPortfolioSnapshots(id, 30);
+
+        // Transform snapshots to chart data
+        const chartData = snapshots
+          .reverse()
+          .map((snapshot) => ({
+            name: new Date(snapshot.snapshot_date).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            }),
+            value: snapshot.total_value_usd || 0,
+          }))
+          .slice(-7); // Last 7 snapshots
+
+        setPortfolioHistory(chartData);
+      } catch (err) {
+        console.error("Failed to fetch portfolio history:", err);
+      }
+    }
+
+    fetchHistory();
+  }, [authUser]);
 
   const pieChartData = useMemo(
     () =>
       assets.map((asset) => ({
         name: asset.symbol,
-        value: asset.balance * asset.price,
+        value: asset.balance_usd || 0,
       })),
     [assets],
   );
 
-  const totalBalance = assets.reduce(
-    (sum, asset) => sum + asset.balance * asset.price,
-    0,
-  );
-  const btcEquivalent = totalBalance / prices.BTC.price;
-  const change24h = 2150; // Mock 24h change
+  const totalBalance = portfolioValue?.total_usd || 0;
+  const btcEquivalent = portfolioValue?.total_btc || 0;
+  const change24hAmount = portfolioChange?.change_usd || 0;
+  const change24hPercent = portfolioChange?.change_percentage || 0;
 
   const filteredTransactions = transactions.filter((tx) => {
     const typeMatch =
       filterType === "all" ||
-      (filterType === "sent" && tx.type === "send") ||
-      (filterType === "received" && tx.type === "receive") ||
-      (filterType === "swapped" && tx.type === "swap");
+      (filterType === "sent" && tx.tx_type === "send") ||
+      (filterType === "received" && tx.tx_type === "receive") ||
+      (filterType === "swapped" && tx.tx_type === "swap");
     const searchMatch =
       searchTerm === "" ||
-      tx.hash.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tx.address.toLowerCase().includes(searchTerm.toLowerCase());
+      (tx.tx_hash && tx.tx_hash.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (tx.from_address && tx.from_address.toLowerCase().includes(searchTerm.toLowerCase()));
     return typeMatch && searchMatch;
   });
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await signOut();
     navigate("/");
   };
 
   const handleCopyAddress = () => {
-    navigator.clipboard.writeText(walletAddress);
-    alert("Wallet address copied!");
+    if (primaryWallet) {
+      navigator.clipboard.writeText(primaryWallet);
+      alert("Wallet address copied!");
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your portfolio...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white rounded-lg p-8 max-w-md text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Error</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <Button onClick={() => refetch()}>Try Again</Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (assets.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <header className="bg-white border-b border-blue-100 sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center">
+                <span className="text-white font-bold text-lg">₿</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900">CryptoVault</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-gray-900 flex items-center gap-2"
+              >
+                <LogOut size={18} />
+                Logout
+              </Button>
+            </div>
+          </div>
+        </header>
+        <main className="max-w-7xl mx-auto px-4 py-8">
+          <div className="bg-white rounded-lg p-8 text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">No Assets Yet</h2>
+            <p className="text-gray-600 mb-6">Connect a wallet to see your portfolio</p>
+            <Button onClick={() => navigate("/connect-wallet")} className="bg-blue-600 hover:bg-blue-700">
+              Connect Wallet
+            </Button>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
