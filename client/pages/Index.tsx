@@ -177,7 +177,7 @@ export default function Index() {
               </div>
 
               {/* Floating Elements */}
-              <div className="absolute -top-6 -right-6 bg-blue-600 text-white rounded-full p-4 shadow-lg">
+              <div className="absolute -top-6 sm:-right-6 right-0 bg-blue-600 text-white rounded-full p-4 shadow-lg">
                 <TrendingUp size={24} />
               </div>
               <div className="absolute -bottom-4 -left-4 bg-green-500 text-white rounded-full p-4 shadow-lg">
