@@ -101,7 +101,7 @@ export default function Index() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
               viewport={{ once: true }}
-              className="grid grid-cols-3 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-6"
             >
               <div>
                 <p className="text-3xl font-bold text-gray-900">10K+</p>
