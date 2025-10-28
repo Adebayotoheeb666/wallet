@@ -1,7 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AnimatedCard } from "@/components/AnimatedCard";
+import { useAuth } from "@/context/AuthContext";
+import { useDashboardData } from "@/hooks/useDashboardData";
 import { motion } from "framer-motion";
 import {
   ArrowUpRight,
@@ -27,73 +29,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { useRealtimePrices } from "@/hooks/useRealtimePrices";
-
-// Mock portfolio data
-const portfolioData = [
-  { name: "Jan", value: 28000 },
-  { name: "Feb", value: 32000 },
-  { name: "Mar", value: 29500 },
-  { name: "Apr", value: 35000 },
-  { name: "May", value: 38000 },
-  { name: "Jun", value: 42000 },
-];
-
-const walletAddress = "1A1z7agoat4xNAavZY2YoW6XwMEUpnqRDM";
-
-const baseAssets = [
-  { id: 1, symbol: "BTC", name: "Bitcoin", balance: 0.542 },
-  { id: 2, symbol: "ETH", name: "Ethereum", balance: 2.148 },
-  { id: 3, symbol: "USDC", name: "USD Coin", balance: 5000 },
-  { id: 4, symbol: "ADA", name: "Cardano", balance: 1500 },
-];
-
-const transactions = [
-  {
-    id: 1,
-    type: "receive",
-    symbol: "BTC",
-    amount: 0.25,
-    usdValue: 10625,
-    date: "2025-01-15",
-    status: "confirmed",
-    hash: "3a4b5c6d...",
-    address: "1B1z7...",
-  },
-  {
-    id: 2,
-    type: "send",
-    symbol: "ETH",
-    amount: 1.0,
-    usdValue: 2280,
-    date: "2025-01-14",
-    status: "confirmed",
-    hash: "4b5c6d7e...",
-    address: "0xAB12...",
-  },
-  {
-    id: 3,
-    type: "swap",
-    symbol: "USDC",
-    amount: 2000,
-    usdValue: 2000,
-    date: "2025-01-13",
-    status: "confirmed",
-    hash: "5c6d7e8f...",
-    address: "Swap",
-  },
-  {
-    id: 4,
-    type: "receive",
-    symbol: "ADA",
-    amount: 500,
-    usdValue: 490,
-    date: "2025-01-12",
-    status: "confirmed",
-    hash: "6d7e8f9g...",
-    address: "1C2d3e...",
-  },
-];
+import { getPortfolioSnapshots } from "@shared/lib/supabase";
 
 const COLORS = ["#2563eb", "#0ea5e9", "#06b6d4", "#0891b2"];
 
