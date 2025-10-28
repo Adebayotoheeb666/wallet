@@ -212,10 +212,7 @@ export default function Dashboard() {
         {/* Portfolio Overview */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {/* Total Balance Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+          <AnimatedCard
             className="lg:col-span-2 bg-white rounded-xl p-8 border border-blue-100 shadow-sm"
           >
             <div className="mb-6">
@@ -278,13 +275,10 @@ export default function Dashboard() {
                 </span>
               </p>
             </div>
-          </motion.div>
+          </AnimatedCard>
 
           {/* Portfolio Allocation */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+          <AnimatedCard
             className="bg-white rounded-xl p-8 border border-blue-100 shadow-sm"
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-6">
@@ -335,7 +329,7 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
-          </motion.div>
+          </AnimatedCard>
         </div>
 
         {/* Assets Overview */}
