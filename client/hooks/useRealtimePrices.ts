@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
+import { getLatestPrice } from "@shared/lib/supabase";
+import type { PriceHistory } from "@shared/types/database";
 
 export interface PriceData {
   [symbol: string]: {
@@ -8,58 +10,59 @@ export interface PriceData {
   };
 }
 
-const INITIAL_PRICES: PriceData = {
-  BTC: { price: 42500, change24h: 5.2, previousPrice: 42500 },
-  ETH: { price: 2280, change24h: -2.1, previousPrice: 2280 },
-  USDC: { price: 1.0, change24h: 0.1, previousPrice: 1.0 },
-  ADA: { price: 0.98, change24h: 3.5, previousPrice: 0.98 },
-};
-
 /**
- * Hook that simulates real-time price updates
- * In production, this would connect to a WebSocket or polling API
+ * Hook that fetches real-time prices from Supabase
+ * Updates prices at specified intervals by polling the database
  */
-export function useRealtimePrices(updateInterval = 3000) {
-  const [prices, setPrices] = useState<PriceData>(INITIAL_PRICES);
-  const [isUpdating, setIsUpdating] = useState(false);
+export function useRealtimePrices(updateInterval = 30000) {
+  const [prices, setPrices] = useState<PriceData>({});
+  const [isUpdating, setIsUpdating] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const updatePrices = useCallback(() => {
+  // Symbols to track
+  const symbols = ["BTC", "ETH", "USDC", "ADA"];
+
+  const updatePrices = useCallback(async () => {
     setIsUpdating(true);
+    setError(null);
 
-    // Simulate price movements with small random changes
-    setPrices((prevPrices) => {
-      const newPrices = { ...prevPrices };
+    try {
+      const newPrices: PriceData = {};
 
-      Object.keys(newPrices).forEach((symbol) => {
-        const current = newPrices[symbol];
-        const volatility =
-          symbol === "BTC" ? 0.02 : symbol === "ETH" ? 0.03 : 0.001;
-        const changePercent = (Math.random() - 0.5) * volatility;
-        const newPrice = current.price * (1 + changePercent);
+      for (const symbol of symbols) {
+        const priceData = await getLatestPrice(symbol);
 
-        // Update 24h change with weighted average
-        const newChange24h =
-          current.change24h * 0.95 + changePercent * 100 * 0.05;
+        if (priceData) {
+          newPrices[symbol] = {
+            price: priceData.price_usd,
+            change24h: priceData.price_change_24h || 0,
+            previousPrice: priceData.price_usd - (priceData.price_change_24h || 0),
+          };
+        }
+      }
 
-        newPrices[symbol] = {
-          previousPrice: current.price,
-          price: parseFloat(newPrice.toFixed(2)),
-          change24h: parseFloat(newChange24h.toFixed(2)),
-        };
-      });
-
-      return newPrices;
-    });
-
-    setIsUpdating(false);
+      if (Object.keys(newPrices).length > 0) {
+        setPrices(newPrices);
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to fetch prices";
+      setError(message);
+      console.error("Price update error:", err);
+    } finally {
+      setIsUpdating(false);
+    }
   }, []);
 
+  // Fetch prices on mount
   useEffect(() => {
-    // Update prices at regular intervals
-    const interval = setInterval(updatePrices, updateInterval);
+    updatePrices();
+  }, []);
 
+  // Set up polling interval for price updates
+  useEffect(() => {
+    const interval = setInterval(updatePrices, updateInterval);
     return () => clearInterval(interval);
   }, [updateInterval, updatePrices]);
 
-  return { prices, isUpdating };
+  return { prices, isUpdating, error, refetch: updatePrices };
 }
