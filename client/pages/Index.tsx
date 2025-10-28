@@ -33,16 +33,39 @@ export default function Index() {
       <section className="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
-          <div>
-            <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 leading-tight mb-6">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="text-5xl sm:text-6xl font-bold text-gray-900 leading-tight mb-6"
+            >
               Manage Your <span className="text-blue-600">Crypto Portfolio</span> Effortlessly
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="text-xl text-gray-600 mb-8 leading-relaxed"
+            >
               Connect your Coinbase wallet securely, track your holdings in real-time, and withdraw funds with confidence. Your crypto, your control.
-            </p>
+            </motion.p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="flex flex-col sm:flex-row gap-4 mb-12"
+            >
               <Button
                 onClick={handleConnectWallet}
                 size="lg"
@@ -58,10 +81,16 @@ export default function Index() {
               >
                 Learn More
               </Button>
-            </div>
+            </motion.div>
 
             {/* Trust Indicators */}
-            <div className="grid grid-cols-3 gap-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="grid grid-cols-3 gap-6"
+            >
               <div>
                 <p className="text-3xl font-bold text-gray-900">10K+</p>
                 <p className="text-gray-600">Active Users</p>
@@ -74,8 +103,8 @@ export default function Index() {
                 <p className="text-3xl font-bold text-gray-900">99.9%</p>
                 <p className="text-gray-600">Uptime</p>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* Right Visual */}
           <div className="flex items-center justify-center">
