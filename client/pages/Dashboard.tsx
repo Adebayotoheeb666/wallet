@@ -398,8 +398,9 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {assets.map((asset) => {
-                  const value = asset.balance * asset.price;
-                  const percentage = (value / totalBalance) * 100;
+                  const value = asset.balance_usd || 0;
+                  const percentage = totalBalance > 0 ? (value / totalBalance) * 100 : 0;
+                  const change24h = asset.price_change_24h || 0;
                   return (
                     <tr
                       key={asset.id}
@@ -414,17 +415,20 @@ export default function Dashboard() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-gray-900">
-                        {asset.balance.toFixed(6)}
+                        {asset.balance.toFixed(8)}
                       </td>
                       <td className="px-6 py-4">
                         <motion.div
-                          key={asset.price}
+                          key={`${asset.symbol}-${asset.price_usd}`}
                           initial={{ scale: 1 }}
                           animate={{ scale: 1 }}
                           transition={{ duration: 0.3 }}
                           className="text-gray-900"
                         >
-                          ${asset.price.toLocaleString()}
+                          ${(asset.price_usd || 0).toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </motion.div>
                       </td>
                       <td className="px-6 py-4 font-medium text-gray-900">
@@ -435,20 +439,21 @@ export default function Dashboard() {
                         >
                           $
                           {value.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
                         </motion.div>
                       </td>
                       <td
-                        className={`px-6 py-4 font-medium ${asset.change24h >= 0 ? "text-green-600" : "text-red-600"}`}
+                        className={`px-6 py-4 font-medium ${change24h >= 0 ? "text-green-600" : "text-red-600"}`}
                       >
                         <motion.div
                           initial={{ opacity: 0.8 }}
                           animate={{ opacity: 1 }}
                           transition={{ duration: 0.3 }}
                         >
-                          {asset.change24h >= 0 ? "↑ " : "↓ "}
-                          {Math.abs(asset.change24h).toFixed(2)}%
+                          {change24h >= 0 ? "↑ " : "↓ "}
+                          {Math.abs(change24h).toFixed(2)}%
                         </motion.div>
                       </td>
                       <td className="px-6 py-4 text-gray-900">
