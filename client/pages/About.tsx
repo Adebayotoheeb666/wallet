@@ -68,15 +68,6 @@ export default function About() {
     },
   ];
 
-  const team = [
-    { name: "Ava Collins", role: "CEO", img: "/placeholder.svg" },
-    { name: "Liam Chen", role: "CTO", img: "/placeholder.svg" },
-    { name: "Noah Patel", role: "Lead Developer", img: "/placeholder.svg" },
-    { name: "Mia Rodriguez", role: "Head of Product", img: "/placeholder.svg" },
-    { name: "Ethan Park", role: "Security Engineer", img: "/placeholder.svg" },
-    { name: "Sophia Lee", role: "Design Lead", img: "/placeholder.svg" },
-  ];
-
   const partners = [
     { name: "Coinbase Wallet" },
     { name: "Alchemy" },
