@@ -253,13 +253,21 @@ export default function Dashboard() {
               </h2>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-1">
-                  <TrendingUp className="text-green-600" size={18} />
-                  <span className="text-green-600 font-semibold">
-                    +${change24h.toLocaleString()}
+                  <TrendingUp className={change24hAmount >= 0 ? "text-green-600" : "text-red-600"} size={18} />
+                  <span className={change24hAmount >= 0 ? "text-green-600 font-semibold" : "text-red-600 font-semibold"}>
+                    {change24hAmount >= 0 ? "+" : ""}${change24hAmount.toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                   </span>
-                  <span className="text-green-600 text-sm">(+5.0% 24h)</span>
+                  <span className={change24hAmount >= 0 ? "text-green-600 text-sm" : "text-red-600 text-sm"}>
+                    ({change24hPercent.toFixed(2)}% 24h)
+                  </span>
                 </div>
-                <button className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1">
+                <button
+                  onClick={() => refetch()}
+                  className="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1"
+                >
                   <RefreshCw size={16} />
                   Refresh
                 </button>
@@ -269,7 +277,7 @@ export default function Dashboard() {
             {/* Chart */}
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={portfolioData}>
+                <LineChart data={portfolioHistory.length > 0 ? portfolioHistory : [{ name: "Today", value: totalBalance }]}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
                   <XAxis dataKey="name" stroke="#9ca3af" />
                   <YAxis stroke="#9ca3af" />
