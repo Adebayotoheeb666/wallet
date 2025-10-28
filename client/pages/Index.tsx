@@ -339,7 +339,7 @@ export default function Index() {
           <AnimatedButton
             onClick={handleConnectWallet}
             size="lg"
-            className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-8 py-6 h-auto rounded-lg font-semibold"
+            className="bg-white text-blue-600 hover:bg-gray-100 text-lg px-6 sm:px-8 py-6 h-auto rounded-lg font-semibold"
           >
             Link Your Coinbase Wallet
           </AnimatedButton>
