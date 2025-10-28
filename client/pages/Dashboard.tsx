@@ -178,29 +178,36 @@ export default function Dashboard() {
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Wallet Address Section */}
-        <div className="bg-white rounded-xl p-6 border border-blue-100 mb-8">
+        <AnimatedCard className="bg-white rounded-xl p-6 border border-blue-100 mb-8 shadow-sm">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-gray-600 text-sm mb-2">Wallet Address</p>
               <p className="font-mono text-lg text-gray-900 flex items-center gap-2">
                 {walletAddress}
-                <button
+                <motion.button
                   onClick={handleCopyAddress}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
                   className="text-blue-600 hover:text-blue-700 ml-2"
                 >
                   <Copy size={18} />
-                </button>
+                </motion.button>
               </p>
             </div>
-            <Button
-              onClick={() => navigate("/withdraw")}
-              className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 px-6 py-2 rounded-lg"
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <ArrowUpRight size={18} />
-              Withdraw Funds
-            </Button>
+              <Button
+                onClick={() => navigate("/withdraw")}
+                className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 px-6 py-2 rounded-lg"
+              >
+                <ArrowUpRight size={18} />
+                Withdraw Funds
+              </Button>
+            </motion.div>
           </div>
-        </div>
+        </AnimatedCard>
 
         {/* Portfolio Overview */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
