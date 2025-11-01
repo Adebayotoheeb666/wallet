@@ -122,7 +122,9 @@ export const handleLockAccounts: RequestHandler<
     }
 
     // Call database function to lock accounts with excessive attempts
-    const { data, error } = await supabase.rpc("lock_accounts_excessive_attempts");
+    const { data, error } = await supabase.rpc(
+      "lock_accounts_excessive_attempts",
+    );
 
     if (error) {
       throw error;

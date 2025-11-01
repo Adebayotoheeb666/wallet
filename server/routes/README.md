@@ -27,6 +27,7 @@ Create a new cryptocurrency withdrawal request.
 **Authentication**: Required (Bearer token)
 
 **Request Body**:
+
 ```json
 {
   "walletId": "550e8400-e29b-41d4-a716-446655440000",
@@ -39,6 +40,7 @@ Create a new cryptocurrency withdrawal request.
 ```
 
 **Response** (201 Created):
+
 ```json
 {
   "success": true,
@@ -47,13 +49,14 @@ Create a new cryptocurrency withdrawal request.
     "id": "550e8400-e29b-41d4-a716-446655440000",
     "status": "pending",
     "amount": 0.5,
-    "amountUsd": 21000.00,
+    "amountUsd": 21000.0,
     "fee": 0.005
   }
 }
 ```
 
 **Error Responses**:
+
 - `400` - Invalid request data or insufficient balance
 - `401` - Unauthorized (invalid or missing token)
 - `403` - Wallet not found or doesn't belong to user
@@ -61,6 +64,7 @@ Create a new cryptocurrency withdrawal request.
 - `500` - Server error
 
 **Business Rules**:
+
 - User must be authenticated
 - Wallet must belong to the authenticated user
 - Asset must exist in wallet
@@ -79,10 +83,12 @@ Get current prices for multiple cryptocurrency symbols.
 **Authentication**: Not required
 
 **Query Parameters**:
+
 - `symbols` (required): Comma-separated list of symbols (e.g., "BTC,ETH,USDC")
 - Max 50 symbols per request
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -113,6 +119,7 @@ Get current prices for multiple cryptocurrency symbols.
 ```
 
 **Error Responses**:
+
 - `400` - Missing or invalid symbols parameter
 - `500` - Failed to fetch prices
 
@@ -125,9 +132,11 @@ Get current price for a single cryptocurrency symbol.
 **Authentication**: Not required
 
 **URL Parameters**:
+
 - `symbol` (required): Cryptocurrency symbol (e.g., "BTC")
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -145,6 +154,7 @@ Get current price for a single cryptocurrency symbol.
 ```
 
 **Error Responses**:
+
 - `400` - Missing symbol parameter
 - `404` - Price not found for symbol
 - `500` - Failed to fetch price
@@ -158,11 +168,13 @@ Update cryptocurrency prices for all symbols from CoinGecko API.
 **Authentication**: Required (X-API-Key header)
 
 **Headers**:
+
 ```bash
 X-API-Key: <CRON_API_KEY>
 ```
 
 **Request Body** (optional):
+
 ```json
 {
   "symbols": ["BTC", "ETH", "USDT", "USDC", "ADA"]
@@ -170,6 +182,7 @@ X-API-Key: <CRON_API_KEY>
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -180,10 +193,12 @@ X-API-Key: <CRON_API_KEY>
 ```
 
 **Error Responses**:
+
 - `401` - Unauthorized (invalid API key)
 - `500` - Server error
 
 **Notes**:
+
 - Called periodically by cron jobs (every hour)
 - Updates `price_history` table
 - Automatically updates `assets` table with new prices
@@ -198,11 +213,13 @@ Check and trigger price alerts that have reached their target prices.
 **Authentication**: Required (X-API-Key header)
 
 **Headers**:
+
 ```bash
 X-API-Key: <CRON_API_KEY>
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -212,10 +229,12 @@ X-API-Key: <CRON_API_KEY>
 ```
 
 **Error Responses**:
+
 - `401` - Unauthorized (invalid API key)
 - `500` - Server error
 
 **Notes**:
+
 - Called every 5 minutes
 - Checks all active price alerts in database
 - Sets `triggered = true` when target price is reached
@@ -233,11 +252,13 @@ Remove expired and old inactive user sessions.
 **Authentication**: Required (X-API-Key header)
 
 **Headers**:
+
 ```bash
 X-API-Key: <CRON_API_KEY>
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -247,10 +268,12 @@ X-API-Key: <CRON_API_KEY>
 ```
 
 **Error Responses**:
+
 - `401` - Unauthorized (invalid API key)
 - `500` - Server error
 
 **Notes**:
+
 - Called daily at 2 AM UTC
 - Removes sessions older than 7 days
 - Typical execution time: 5 seconds
@@ -264,11 +287,13 @@ Unlock user accounts that have been locked due to excessive failed login attempt
 **Authentication**: Required (X-API-Key header)
 
 **Headers**:
+
 ```bash
 X-API-Key: <CRON_API_KEY>
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -278,10 +303,12 @@ X-API-Key: <CRON_API_KEY>
 ```
 
 **Error Responses**:
+
 - `401` - Unauthorized (invalid API key)
 - `500` - Server error
 
 **Notes**:
+
 - Called hourly
 - Unlocks accounts where lock period has expired (30 minutes)
 - Resets `failed_login_attempts` counter to 0
@@ -296,11 +323,13 @@ Lock user accounts with excessive failed login attempts.
 **Authentication**: Required (X-API-Key header)
 
 **Headers**:
+
 ```bash
 X-API-Key: <CRON_API_KEY>
 ```
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -310,10 +339,12 @@ X-API-Key: <CRON_API_KEY>
 ```
 
 **Error Responses**:
+
 - `401` - Unauthorized (invalid API key)
 - `500` - Server error
 
 **Notes**:
+
 - Called every 10 minutes
 - Locks accounts with 5+ failed login attempts
 - Lock duration: 30 minutes
@@ -333,6 +364,7 @@ All endpoints return consistent error responses:
 ```
 
 Common HTTP status codes:
+
 - `200` - Success
 - `201` - Created (withdrawal request created)
 - `400` - Bad Request (validation error)
@@ -360,7 +392,7 @@ const token = "your-jwt-token";
 const response = await fetch("/api/withdraw", {
   method: "POST",
   headers: {
-    "Authorization": `Bearer ${token}`,
+    Authorization: `Bearer ${token}`,
     "Content-Type": "application/json",
   },
   body: JSON.stringify({

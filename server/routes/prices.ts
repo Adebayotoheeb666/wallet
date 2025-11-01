@@ -235,7 +235,9 @@ export const handleCheckPriceAlerts: RequestHandler<
     }
 
     // Call database function to check and trigger alerts
-    const { data, error } = await supabase.rpc("check_and_trigger_price_alerts");
+    const { data, error } = await supabase.rpc(
+      "check_and_trigger_price_alerts",
+    );
 
     if (error) {
       throw error;

@@ -5,12 +5,14 @@ This guide explains how to set up automated cron jobs for price updates, alert c
 ## Available Cron Jobs
 
 ### 1. **Update Prices** (Every Hour)
+
 - **Endpoint**: `POST /api/prices/update`
 - **Description**: Fetches latest cryptocurrency prices from CoinGecko and updates the database
 - **Timeout**: 30 seconds
 - **Cron Expression**: `0 * * * *` (Every hour at minute 0)
 
 **Example Request**:
+
 ```bash
 curl -X POST https://yourdomain.com/api/prices/update \
   -H "X-API-Key: your-cron-api-key" \
@@ -19,12 +21,14 @@ curl -X POST https://yourdomain.com/api/prices/update \
 ```
 
 ### 2. **Check Price Alerts** (Every 5 Minutes)
+
 - **Endpoint**: `POST /api/prices/alerts`
 - **Description**: Checks active price alerts and triggers notifications when targets are reached
 - **Timeout**: 20 seconds
 - **Cron Expression**: `*/5 * * * *` (Every 5 minutes)
 
 **Example Request**:
+
 ```bash
 curl -X POST https://yourdomain.com/api/prices/alerts \
   -H "X-API-Key: your-cron-api-key" \
@@ -32,17 +36,20 @@ curl -X POST https://yourdomain.com/api/prices/alerts \
 ```
 
 ### 3. **Cleanup Sessions** (Daily at 2 AM UTC)
+
 - **Endpoint**: `POST /api/maintenance/cleanup-sessions`
 - **Description**: Removes expired and old inactive user sessions
 - **Timeout**: 30 seconds
 - **Cron Expression**: `0 2 * * *` (Daily at 2:00 AM UTC)
 
 ### 4. **Lock Accounts** (Every 10 Minutes)
+
 - **Endpoint**: `POST /api/maintenance/lock-accounts`
 - **Description**: Locks accounts with excessive failed login attempts
 - **Timeout**: 15 seconds
 
 ### 5. **Unlock Accounts** (Every Hour)
+
 - **Endpoint**: `POST /api/maintenance/unlock-accounts`
 - **Description**: Unlocks accounts whose lock period has expired
 - **Timeout**: 15 seconds
@@ -66,16 +73,13 @@ export async function POST(request: NextRequest) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const response = await fetch(
-    "https://yourdomain.com/api/prices/update",
-    {
-      method: "POST",
-      headers: {
-        "X-API-Key": CRON_API_KEY,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const response = await fetch("https://yourdomain.com/api/prices/update", {
+    method: "POST",
+    headers: {
+      "X-API-Key": CRON_API_KEY,
+      "Content-Type": "application/json",
+    },
+  });
 
   return response;
 }
@@ -118,16 +122,13 @@ import { Handler } from "@netlify/functions";
 const CRON_API_KEY = process.env.CRON_API_KEY;
 
 const handler: Handler = async () => {
-  const response = await fetch(
-    "https://yourdomain.com/api/prices/update",
-    {
-      method: "POST",
-      headers: {
-        "X-API-Key": CRON_API_KEY,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const response = await fetch("https://yourdomain.com/api/prices/update", {
+    method: "POST",
+    headers: {
+      "X-API-Key": CRON_API_KEY,
+      "Content-Type": "application/json",
+    },
+  });
 
   return {
     statusCode: response.status,
@@ -298,16 +299,13 @@ curl -X POST http://localhost:5173/api/maintenance/cleanup-sessions \
 
 ```typescript
 async function testCronJob() {
-  const response = await fetch(
-    "http://localhost:5173/api/prices/update",
-    {
-      method: "POST",
-      headers: {
-        "X-API-Key": "test-key",
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  const response = await fetch("http://localhost:5173/api/prices/update", {
+    method: "POST",
+    headers: {
+      "X-API-Key": "test-key",
+      "Content-Type": "application/json",
+    },
+  });
 
   const data = await response.json();
   console.log(data);
@@ -370,6 +368,7 @@ Adjust based on your traffic and CoinGecko API rate limits.
 ## Security Best Practices
 
 1. **Use strong `CRON_API_KEY`**:
+
    ```bash
    openssl rand -hex 32
    ```

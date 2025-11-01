@@ -47,9 +47,8 @@ export const handleWithdraw: RequestHandler<
     const token = authHeader.substring(7);
 
     // Verify token with Supabase
-    const { data: userData, error: authError } = await supabase.auth.getUser(
-      token,
-    );
+    const { data: userData, error: authError } =
+      await supabase.auth.getUser(token);
     if (authError || !userData.user) {
       res.status(401).json({
         success: false,
@@ -72,14 +71,8 @@ export const handleWithdraw: RequestHandler<
       return;
     }
 
-    const {
-      walletId,
-      symbol,
-      amount,
-      destinationAddress,
-      network,
-      email,
-    } = withdrawalData;
+    const { walletId, symbol, amount, destinationAddress, network, email } =
+      withdrawalData;
 
     // Get user from database
     const { data: user, error: userError } = await supabase
