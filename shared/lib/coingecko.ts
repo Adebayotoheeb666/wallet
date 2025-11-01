@@ -1,5 +1,4 @@
-const COINGECKO_API =
-  (typeof import.meta !== "undefined" && import.meta.env?.VITE_COINGECKO_API) || "https://api.coingecko.com/api/v3";
+const COINGECKO_API = (typeof import.meta !== "undefined" && import.meta.env?.VITE_COINGECKO_API) || "";
 
 export interface CoinPrice {
   id: string;
@@ -48,6 +47,11 @@ const COIN_IDS: Record<string, string> = {
 
 export async function getCoinPrice(symbol: string): Promise<CoinPrice | null> {
   try {
+    if (!COINGECKO_API) {
+      console.error("VITE_COINGECKO_API environment variable not configured");
+      return null;
+    }
+
     const coinId = COIN_IDS[symbol.toUpperCase()];
     if (!coinId) {
       console.warn(`Coin symbol ${symbol} not found in CoinGecko mapping`);
@@ -89,6 +93,12 @@ export async function getMultipleCoinPrices(
   symbols: string[],
 ): Promise<Record<string, CoinPrice>> {
   const prices: Record<string, CoinPrice> = {};
+
+  if (!COINGECKO_API) {
+    console.error("VITE_COINGECKO_API environment variable not configured");
+    return prices;
+  }
+
   const coinIds = symbols.map((s) => COIN_IDS[s.toUpperCase()]).filter(Boolean);
 
   if (coinIds.length === 0) {
@@ -134,6 +144,11 @@ export async function getCoinDetails(
   symbol: string,
 ): Promise<CoinPrice | null> {
   try {
+    if (!COINGECKO_API) {
+      console.error("VITE_COINGECKO_API environment variable not configured");
+      return null;
+    }
+
     const coinId = COIN_IDS[symbol.toUpperCase()];
     if (!coinId) {
       console.warn(`Coin symbol ${symbol} not found in CoinGecko mapping`);
