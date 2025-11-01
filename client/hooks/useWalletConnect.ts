@@ -106,37 +106,21 @@ export function useWalletConnect(): UseWalletConnectReturn {
 
       const provider = new BrowserProvider(instance);
 
-      // Get network info first to ensure provider is ready
+      // Request accounts from the provider to get the wallet address
+      const accounts = await instance.request({ method: "eth_accounts" }) as string[];
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error("No wallet accounts found");
+      }
+
+      const address = accounts[0];
+
+      // Get network info
       const network = await provider.getNetwork();
-
-      // Get signer and address
-      const signer = provider.getSigner();
-
-      if (!signer) {
-        throw new Error("Failed to get signer from provider");
-      }
-
-      let address: string;
-      try {
-        address = await signer.getAddress();
-      } catch (addressError) {
-        // Fallback: try to get address from accounts list
-        const accounts = await provider.listAccounts();
-        if (!accounts || accounts.length === 0) {
-          throw new Error(
-            "Could not retrieve wallet address from signer or provider",
-          );
-        }
-        address = accounts[0];
-      }
-
-      if (!address) {
-        throw new Error("Failed to get wallet address");
-      }
 
       setWallet({
         address,
-        chainId: network.chainId,
+        chainId: Number(network.chainId),
         isConnected: true,
         provider,
       });
