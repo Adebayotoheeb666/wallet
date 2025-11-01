@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { WalletConnectButton } from "@/components/WalletConnectButton";
 import {
   AlertCircle,
   Eye,
