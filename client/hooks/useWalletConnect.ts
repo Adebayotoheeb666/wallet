@@ -106,7 +106,16 @@ export function useWalletConnect(): UseWalletConnectReturn {
 
       const provider = new BrowserProvider(instance);
       const signer = provider.getSigner();
+
+      if (!signer) {
+        throw new Error("Failed to get signer from provider");
+      }
+
       const address = await signer.getAddress();
+      if (!address) {
+        throw new Error("Failed to get wallet address from signer");
+      }
+
       const network = await provider.getNetwork();
 
       setWallet({
