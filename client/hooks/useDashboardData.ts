@@ -7,6 +7,7 @@ import {
   getTransactionHistory,
   getLatestPrice,
 } from "@shared/lib/supabase";
+import { getMultipleCoinPrices } from "@shared/lib/coingecko";
 import type {
   PortfolioValue,
   PortfolioChange,
