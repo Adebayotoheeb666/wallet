@@ -226,6 +226,9 @@ export function useWalletConnect(): UseWalletConnectReturn {
 
       // Sign the message with the wallet
       const signer = wallet.provider.getSigner();
+      if (!signer) {
+        throw new Error("Failed to get signer from provider");
+      }
       const signature = await signer.signMessage(message);
 
       // Verify the signature matches the address
