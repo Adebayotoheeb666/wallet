@@ -40,8 +40,7 @@ export function useRealtimePrices(updateInterval = 30000) {
             price: priceData.price_usd,
             change24h: priceData.price_change_24h || 0,
             previousPrice:
-              priceData.price_usd -
-              (priceData.price_change_24h || 0),
+              priceData.price_usd - (priceData.price_change_24h || 0),
           };
         }
       });

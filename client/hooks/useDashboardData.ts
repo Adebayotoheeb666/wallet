@@ -84,7 +84,7 @@ export function useDashboardData(): DashboardData {
           } as PriceHistory;
         } else {
           // Fallback to Supabase if CoinGecko fails
-          getLatestPrice(symbol).then(price => {
+          getLatestPrice(symbol).then((price) => {
             if (price) {
               priceData[symbol] = price;
             }

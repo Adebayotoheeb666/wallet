@@ -88,9 +88,7 @@ export async function getMultipleCoinPrices(
   symbols: string[],
 ): Promise<Record<string, CoinPrice>> {
   const prices: Record<string, CoinPrice> = {};
-  const coinIds = symbols
-    .map((s) => COIN_IDS[s.toUpperCase()])
-    .filter(Boolean);
+  const coinIds = symbols.map((s) => COIN_IDS[s.toUpperCase()]).filter(Boolean);
 
   if (coinIds.length === 0) {
     return prices;
