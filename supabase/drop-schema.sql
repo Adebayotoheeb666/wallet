@@ -70,7 +70,7 @@ DROP FUNCTION IF EXISTS public.log_audit_event(UUID, VARCHAR, VARCHAR, UUID, JSO
 DROP FUNCTION IF EXISTS public.log_audit_event(UUID, VARCHAR, VARCHAR, UUID, JSONB, JSONB, INET, TEXT) CASCADE;
 DROP FUNCTION IF EXISTS public.log_audit_event(UUID, VARCHAR, VARCHAR, UUID, JSONB, JSONB) CASCADE;
 
--- Step 6: Drop all tables (in reverse dependency order)
+-- Step 4: Drop all tables (in reverse dependency order)
 DROP TABLE IF EXISTS public.notification_logs CASCADE;
 DROP TABLE IF EXISTS public.audit_logs CASCADE;
 DROP TABLE IF EXISTS public.price_alerts CASCADE;
