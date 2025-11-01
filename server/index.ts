@@ -11,6 +11,11 @@ import {
   handleUpdatePrices,
   handleCheckPriceAlerts,
 } from "./routes/prices";
+import {
+  handleCleanupSessions,
+  handleUnlockAccounts,
+  handleLockAccounts,
+} from "./routes/maintenance";
 
 export function createServer() {
   const app = express();
