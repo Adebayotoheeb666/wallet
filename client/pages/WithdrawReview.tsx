@@ -34,13 +34,15 @@ export default function WithdrawReview() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch real price data
+  // Fetch real price data from CoinGecko
   useEffect(() => {
     async function fetchPrice() {
       try {
-        const priceData = await getLatestPrice(crypto);
+        const priceData = await getCoinPrice(crypto);
         if (priceData) {
           setPrice(priceData.price_usd);
+        } else {
+          setError("Price data not available for this cryptocurrency");
         }
       } catch (err) {
         console.error("Failed to fetch price:", err);
