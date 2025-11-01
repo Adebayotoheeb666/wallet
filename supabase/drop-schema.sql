@@ -23,7 +23,7 @@ DROP POLICY IF EXISTS "Users can view their own snapshots" ON public.portfolio_s
 DROP POLICY IF EXISTS "Users can view their own notifications" ON public.notification_logs;
 DROP POLICY IF EXISTS "Users can view their own audit logs" ON public.audit_logs;
 
--- Step 3: Drop all triggers (must be done before dropping functions)
+-- Step 2: Drop all triggers (must be done before dropping functions)
 DROP TRIGGER IF EXISTS users_update_timestamp ON public.users;
 DROP TRIGGER IF EXISTS wallets_update_timestamp ON public.wallets;
 DROP TRIGGER IF EXISTS assets_update_timestamp ON public.assets;
