@@ -120,14 +120,14 @@ export function useWalletConnect(): UseWalletConnectReturn {
       try {
         address = await signer.getAddress();
       } catch (addressError) {
-        // Fallback: try to get address from accounts
+        // Fallback: try to get address from accounts list
         const accounts = await provider.listAccounts();
         if (!accounts || accounts.length === 0) {
           throw new Error(
             "Could not retrieve wallet address from signer or provider",
           );
         }
-        address = accounts[0].address;
+        address = accounts[0];
       }
 
       if (!address) {
