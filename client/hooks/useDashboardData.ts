@@ -7,6 +7,7 @@ import {
   getTransactionHistory,
   getLatestPrice,
 } from "@shared/lib/supabase";
+import { getMultipleCoinPrices } from "@shared/lib/coingecko";
 import type {
   PortfolioValue,
   PortfolioChange,
@@ -59,14 +60,37 @@ export function useDashboardData(): DashboardData {
       setAssets(assetsData);
       setTransactions(txData);
 
-      // Fetch latest prices for each asset
+      // Fetch latest prices from CoinGecko
       const uniqueSymbols = [...new Set(assetsData.map((a) => a.symbol))];
-      const priceData: Record<string, PriceHistory | null> = {};
 
-      for (const symbol of uniqueSymbols) {
-        const price = await getLatestPrice(symbol);
-        priceData[symbol] = price;
-      }
+      // Fetch from CoinGecko
+      const coingeckoPrices = await getMultipleCoinPrices(uniqueSymbols);
+
+      // Convert CoinGecko prices to PriceHistory format
+      const priceData: Record<string, PriceHistory | null> = {};
+      uniqueSymbols.forEach((symbol) => {
+        const cgPrice = coingeckoPrices[symbol.toUpperCase()];
+        if (cgPrice) {
+          priceData[symbol] = {
+            id: cgPrice.id,
+            symbol: cgPrice.symbol,
+            price_usd: cgPrice.price_usd,
+            price_change_24h: cgPrice.price_change_24h,
+            market_cap: cgPrice.market_cap,
+            volume_24h: cgPrice.volume_24h,
+            circulating_supply: cgPrice.circulating_supply,
+            timestamp: new Date().toISOString(),
+            source: "coingecko",
+          } as PriceHistory;
+        } else {
+          // Fallback to Supabase if CoinGecko fails
+          getLatestPrice(symbol).then((price) => {
+            if (price) {
+              priceData[symbol] = price;
+            }
+          });
+        }
+      });
 
       setPrices(priceData);
     } catch (err) {

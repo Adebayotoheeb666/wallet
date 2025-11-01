@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AnimatedCard } from "@/components/AnimatedCard";
 import { useAuth } from "@/context/AuthContext";
+import { useWallet } from "@/context/WalletContext";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { motion } from "framer-motion";
 import {
@@ -36,6 +37,7 @@ const COLORS = ["#2563eb", "#0ea5e9", "#06b6d4", "#0891b2"];
 export default function Dashboard() {
   const navigate = useNavigate();
   const { authUser, signOut } = useAuth();
+  const { address: walletAddress } = useWallet();
   const {
     portfolioValue,
     portfolioChange,
@@ -56,6 +58,13 @@ export default function Dashboard() {
       navigate("/connect-wallet");
     }
   }, [authUser, navigate]);
+
+  // Set primary wallet from connected wallet
+  useEffect(() => {
+    if (walletAddress) {
+      setPrimaryWallet(walletAddress);
+    }
+  }, [walletAddress]);
 
   // Fetch portfolio history for chart
   useEffect(() => {

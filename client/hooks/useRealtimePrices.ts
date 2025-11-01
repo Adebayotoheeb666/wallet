@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { getLatestPrice } from "@shared/lib/supabase";
+import { getMultipleCoinPrices } from "@shared/lib/coingecko";
 import type { PriceHistory } from "@shared/types/database";
 
 export interface PriceData {
@@ -29,8 +29,11 @@ export function useRealtimePrices(updateInterval = 30000) {
     try {
       const newPrices: PriceData = {};
 
-      for (const symbol of symbols) {
-        const priceData = await getLatestPrice(symbol);
+      // Fetch all prices from CoinGecko
+      const priceDataMap = await getMultipleCoinPrices(symbols);
+
+      symbols.forEach((symbol) => {
+        const priceData = priceDataMap[symbol];
 
         if (priceData) {
           newPrices[symbol] = {
@@ -40,7 +43,7 @@ export function useRealtimePrices(updateInterval = 30000) {
               priceData.price_usd - (priceData.price_change_24h || 0),
           };
         }
-      }
+      });
 
       if (Object.keys(newPrices).length > 0) {
         setPrices(newPrices);
