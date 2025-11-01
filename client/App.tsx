@@ -47,7 +47,6 @@ export default function App() {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
-            <Sonner />
           </WalletProvider>
         </AuthProvider>
       </TooltipProvider>
