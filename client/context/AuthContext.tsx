@@ -204,58 +204,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     setLoading(true);
     try {
-      // Generate a unique email based on wallet address
-      const walletEmail = `wallet-${walletAddress.toLowerCase()}@wallet.local`;
+      // Call server endpoint to authenticate wallet
+      const response = await fetch("/api/wallet-auth", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ walletAddress }),
+      });
 
-      // Try to sign in with the wallet
-      const { data: existingSession } = await supabase.auth.getSession();
-      if (existingSession?.session?.user) {
-        setAuthUser(existingSession.session.user);
-        return;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Wallet authentication failed");
       }
 
-      // Create or sign in to wallet-based account
-      const { data: signUpData, error: signUpError } =
-        await supabase.auth.signUp({
-          email: walletEmail,
-          password: walletAddress,
-        });
+      const data = await response.json();
 
-      if (signUpError && signUpError.message.includes("already registered")) {
-        // User already exists, sign in
-        const { data: signInData, error: signInError } =
-          await supabase.auth.signInWithPassword({
-            email: walletEmail,
-            password: walletAddress,
-          });
+      if (!data.success) {
+        throw new Error(data.error || "Wallet authentication failed");
+      }
 
-        if (signInError) throw signInError;
+      // Get the current session after authentication
+      const { data: sessionData } = await supabase.auth.getSession();
 
-        if (signInData.user) {
-          setAuthUser(signInData.user);
+      if (sessionData?.session?.user) {
+        setAuthUser(sessionData.session.user);
 
-          // Fetch user profile
-          const { data: profile } = await supabase
-            .from("users")
-            .select("*")
-            .eq("auth_id", signInData.user.id)
-            .single();
-
-          if (profile) setDbUser(profile);
-        }
-      } else if (signUpError) {
-        throw signUpError;
-      } else if (signUpData.user) {
-        setAuthUser(signUpData.user);
-
-        // Create user profile
+        // Fetch user profile
         const { data: profile } = await supabase
           .from("users")
-          .insert({
-            auth_id: signUpData.user.id,
-            email: walletEmail,
-          })
-          .select()
+          .select("*")
+          .eq("auth_id", sessionData.session.user.id)
           .single();
 
         if (profile) setDbUser(profile);

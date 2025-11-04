@@ -5,6 +5,7 @@ import { handleDemo } from "./routes/demo";
 import { handleSupabaseHealth } from "./routes/supabaseHealth";
 import { handleEnvJs } from "./routes/env";
 import { handleWithdraw } from "./routes/withdraw";
+import { handleWalletAuth } from "./routes/wallet-auth";
 import {
   handleGetPrices,
   handleGetPriceBySymbol,
@@ -50,6 +51,10 @@ export function createServer() {
     // eslint-disable-next-line no-console
     console.warn("Could not register supabase health route", e);
   }
+
+  // Wallet authentication routes
+  // POST /api/wallet-auth - Authenticate wallet and create session
+  app.post("/api/wallet-auth", handleWalletAuth);
 
   // Withdrawal routes
   // POST /api/withdraw - Create withdrawal request
